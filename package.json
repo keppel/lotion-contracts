@@ -1,6 +1,6 @@
 {
   "name": "wasm-contracts",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "WebAssembly smart contracts for Lotion/Coins apps",
   "main": "index.js",
   "scripts": {
