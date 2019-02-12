@@ -1,6 +1,6 @@
 let VM = require('./lib/vm.js')
 
-exports.coinsHandler = function() {
+exports.coinsHandler = function(opts = {}) {
   let vm
 
   return {
@@ -9,7 +9,7 @@ exports.coinsHandler = function() {
       state.storage = {}
       state.binaries = {}
       state.balances = {}
-      state.gasPrice = 1
+      state.gasPrice = opts.gasPrice || 0.0001
       vm = new VM(state, context)
     },
     onBlock: function(state, context) {
