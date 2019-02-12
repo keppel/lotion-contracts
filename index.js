@@ -24,7 +24,6 @@ exports.coinsHandler = function() {
         console.log(e)
       }
     },
-    onInput() {},
     onOutput(output, state, context) {
       if (!vm) {
         vm = new VM(state, context)
