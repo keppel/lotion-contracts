@@ -1,0 +1,26 @@
+{
+  "name": "wasm-contracts",
+  "version": "0.0.6",
+  "description": "WebAssembly smart contracts for Lotion/Coins apps",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "lotion": "^0.4.8"
+  },
+  "dependencies": {
+    "assemblyscript": "github:assemblyscript/assemblyscript",
+    "coins": "^4.3.2",
+    "concat-stream": "^2.0.0",
+    "debug": "^4.1.1",
+    "lotion-router": "^2.1.0",
+    "muta": "^0.4.0",
+    "tempy": "^0.2.1",
+    "through2": "^3.0.0",
+    "wasm-metering": "^0.2.1"
+  }
+}
