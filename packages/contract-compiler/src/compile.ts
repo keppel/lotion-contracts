@@ -8,8 +8,18 @@ module.exports = function compile(tsPath) {
     tsPath = path.resolve(path.dirname(module.parent.filename), tsPath)
 
     let tmpPath = tempy.file({ extension: 'wasm' })
+    let libPath = path.join(__dirname, 'lib')
     asc.main(
-      [tsPath, '--binaryFile', tmpPath, '--baseDir', '/', '--optimize'],
+      [
+        tsPath,
+        '--binaryFile',
+        tmpPath,
+        '--baseDir',
+        '/',
+        '--optimize',
+        '--lib',
+        libPath
+      ],
       {},
       function(err) {
         if (err) {
