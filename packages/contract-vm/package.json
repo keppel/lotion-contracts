@@ -2,14 +2,20 @@
   "name": "contract-vm",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/node": "^11.9.4"
+    "@types/node": "^11.9.4",
+    "@types/webassembly-js-api": "0.0.2",
+    "assemblyscript": "github:assemblyscript/assemblyscript#e623786b426b4649a192b6c47b44ea41acd7d9b8"
+  },
+  "devDependencies": {
+    "contract-compiler": "^0.0.0"
   }
 }

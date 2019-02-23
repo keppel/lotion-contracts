@@ -1,6 +1,13 @@
 import 'allocator/arena'
 export { memory }
 
-export function getFour(): i32 {
-  return 4
+export class Contract {
+  public count: i32 = 0
+
+  constructor() {}
+
+  increment(value: i32 = 1): i32 {
+    this.count += value
+    return this.count
+  }
 }
