@@ -4,6 +4,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es5",
+    "experimentalDecorators": true,
     "lib": ["esnext", "es2015"]
   },
   "include": ["src/"],
