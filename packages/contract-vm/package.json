@@ -13,7 +13,8 @@
   "dependencies": {
     "@types/node": "^11.9.4",
     "@types/webassembly-js-api": "0.0.2",
-    "assemblyscript": "github:assemblyscript/assemblyscript#e623786b426b4649a192b6c47b44ea41acd7d9b8"
+    "assemblyscript": "github:assemblyscript/assemblyscript#e623786b426b4649a192b6c47b44ea41acd7d9b8",
+    "wasm-metering": "^0.2.1"
   },
   "devDependencies": {
     "contract-compiler": "^0.0.0"

@@ -1,5 +1,6 @@
 let loader = require('assemblyscript/lib/loader')
 const CONTRACT_CLASS_NAME = 'Contract'
+let metering = require('wasm-metering')
 
 export class Contract {
   public instance
@@ -7,7 +8,10 @@ export class Contract {
   public contract
   public contractInstance
 
-  constructor(public code, private bindings?) {
+  private meteredCode
+  private consumeGas
+
+  constructor(public code, private bindings) {
     this.contract = new Proxy(
       {},
       {
@@ -30,12 +34,20 @@ export class Contract {
       }
     )
 
+    this.meteredCode = metering.meterWASM(this.code)
     this.initialize()
   }
 
   initialize() {
-    this.instance = loader.instantiateBuffer(this.code, {
-      contract: this.bindings
+    this.instance = loader.instantiateBuffer(this.meteredCode, {
+      contract: this.bindings,
+      metering: {
+        usegas: gas => {
+          if (this.consumeGas) {
+            this.consumeGas(gas)
+          }
+        }
+      }
     })
 
     if (!this.instance[CONTRACT_CLASS_NAME]) {
@@ -49,6 +61,10 @@ export class Contract {
     }
     assignMemory(this.instance.memory.buffer, this.memory)
     this.memory = this.instance.memory.buffer
+  }
+
+  useMeter(consumeGas?) {
+    this.consumeGas = consumeGas
   }
 }
 

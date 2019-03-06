@@ -12,6 +12,7 @@ import { ContractStore } from './contract-store'
 
 interface HostOptions {
   contractStore?: ContractStore
+  meter?(gas: number)
 }
 
 interface Message {
@@ -20,6 +21,8 @@ interface Message {
   method: string
   data?: Array<any>
 }
+
+type GasMeter = (cost: number) => void
 
 export class Host {
   public contractStore: ContractStore
@@ -32,11 +35,19 @@ export class Host {
     }
   }
 
-  execute(message: Message) {
-    let { contract } = this.contractStore.getContract(message.to)
+  execute(message: Message, consumeGas?: GasMeter) {
+    let wrappedContract = this.contractStore.getContract(message.to)
+    let { contract } = wrappedContract
     if (typeof contract[message.method] !== 'function') {
       throw new Error('Contract has no method called ' + message.method)
     }
-    return contract[message.method](...message.data)
+    try {
+      wrappedContract.useMeter(consumeGas)
+      return contract[message.method](...message.data)
+    } catch (e) {
+      throw e
+    } finally {
+      wrappedContract.useMeter()
+    }
   }
 }

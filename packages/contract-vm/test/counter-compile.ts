@@ -19,6 +19,9 @@ async function main() {
   let address = host.contractStore.addContract(contractWrapper)
   let message = { sender: 'judd', to: address, method: 'increment', data: [3] }
 
-  console.log(host.execute(message))
+  function consumeGas(gas) {
+    console.log(`consumed ${gas} gas`)
+  }
+  console.log(host.execute(message, consumeGas))
 }
 main()
