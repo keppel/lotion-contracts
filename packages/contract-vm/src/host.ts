@@ -43,7 +43,8 @@ export class Host {
     }
     try {
       wrappedContract.useMeter(consumeGas)
-      return contract[message.method](...message.data)
+      let result = contract[message.method](...message.data)
+      return result
     } catch (e) {
       throw e
     } finally {

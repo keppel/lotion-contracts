@@ -1,5 +1,5 @@
 /**
- * Default contract store which uses a plain JavaScript object interface
+ * Default contract store
  */
 
 import { Contract } from './contract'
@@ -22,5 +22,29 @@ export class ContractStore {
 
     this.contracts[address] = contract
     return address
+  }
+
+  /**
+   * Returns a minimal view of the contracts.
+   * You can serialize this view, send it to another machine,
+   * and pass it to load() to recreate the same host.
+   *
+   */
+  save() {
+    let result = {}
+    Object.keys(this.contracts).forEach(address => {
+      result[address] = {
+        memory: new Uint32Array(this.contracts[address].memory),
+        code: this.contracts[address].code
+      }
+    })
+    return result
+  }
+
+  load(view) {
+    Object.keys(view).forEach(address => {
+      this.contracts[address] = new Contract(view[address].code)
+      this.contracts[address].loadMemory(view[address].memory)
+    })
   }
 }

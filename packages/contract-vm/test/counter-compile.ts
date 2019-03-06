@@ -1,14 +1,10 @@
 let compile = require('contract-compiler')
 let { Contract, Host } = require('../')
 
-const contractBindings = {
-  foo: function() {}
-}
-
 async function main() {
   // Test single contract
   let code = await compile(`contracts/counter.ts`)
-  let contractWrapper = new Contract(code, contractBindings)
+  let contractWrapper = new Contract(code)
   let { contract } = contractWrapper
   contract.count = 1
   contract.increment(50)
@@ -23,5 +19,12 @@ async function main() {
     console.log(`consumed ${gas} gas`)
   }
   console.log(host.execute(message, consumeGas))
+
+  let view = host.contractStore.save()
+
+  let host2 = new Host({})
+  host2.contractStore.load(view)
+  console.log(host2.execute(message, consumeGas)) // 106
+  console.log(host.execute(message, consumeGas)) // 106
 }
 main()

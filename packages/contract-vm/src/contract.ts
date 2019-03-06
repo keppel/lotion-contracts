@@ -11,7 +11,7 @@ export class Contract {
   private meteredCode
   private consumeGas
 
-  constructor(public code, private bindings) {
+  constructor(public code) {
     this.contract = new Proxy(
       {},
       {
@@ -40,11 +40,12 @@ export class Contract {
 
   initialize() {
     this.instance = loader.instantiateBuffer(this.meteredCode, {
-      contract: this.bindings,
       metering: {
         usegas: gas => {
-          if (this.consumeGas) {
-            this.consumeGas(gas)
+          if (typeof gas === 'number' && gas > 0) {
+            if (this.consumeGas) {
+              this.consumeGas(gas)
+            }
           }
         }
       }
@@ -65,6 +66,10 @@ export class Contract {
 
   useMeter(consumeGas?) {
     this.consumeGas = consumeGas
+  }
+
+  loadMemory(memory) {
+    assignMemory(this.instance.memory.buffer, memory)
   }
 }
 
