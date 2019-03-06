@@ -14,8 +14,15 @@ interface HostOptions {
   contractStore?: ContractStore
 }
 
+interface Message {
+  sender: string
+  to: string
+  method: string
+  data?: Array<any>
+}
+
 export class Host {
-  private contractStore: ContractStore
+  public contractStore: ContractStore
 
   constructor(opts: HostOptions) {
     if (opts.contractStore) {
@@ -23,5 +30,13 @@ export class Host {
     } else {
       this.contractStore = new ContractStore()
     }
+  }
+
+  execute(message: Message) {
+    let { contract } = this.contractStore.getContract(message.to)
+    if (typeof contract[message.method] !== 'function') {
+      throw new Error('Contract has no method called ' + message.method)
+    }
+    return contract[message.method](...message.data)
   }
 }

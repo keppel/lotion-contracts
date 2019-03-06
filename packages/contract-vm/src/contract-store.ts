@@ -20,7 +20,7 @@ export class ContractStore {
       .update(contract.code)
       .digest('base64')
 
-    this.contracts[address]
+    this.contracts[address] = contract
     return address
   }
 }
