@@ -8,12 +8,7 @@
  */
 
 import { Contract } from './contract'
-import { ContractStore } from './contract-store'
-
-interface HostOptions {
-  contractStore?: ContractStore
-  meter?(gas: number)
-}
+let { createHash } = require('crypto')
 
 interface Message {
   sender: string
@@ -25,18 +20,12 @@ interface Message {
 type GasMeter = (cost: number) => void
 
 export class Host {
-  public contractStore: ContractStore
+  public contracts = {}
 
-  constructor(opts: HostOptions) {
-    if (opts.contractStore) {
-      this.contractStore = opts.contractStore
-    } else {
-      this.contractStore = new ContractStore()
-    }
-  }
+  constructor(opts = {}) {}
 
   execute(message: Message, consumeGas?: GasMeter) {
-    let wrappedContract = this.contractStore.getContract(message.to)
+    let wrappedContract = this.contracts[message.to]
     let { contract } = wrappedContract
     if (typeof contract[message.method] !== 'function') {
       throw new Error('Contract has no method called ' + message.method)
@@ -50,5 +39,39 @@ export class Host {
     } finally {
       wrappedContract.useMeter()
     }
+  }
+
+  addContract(contract: Contract): string {
+    console.log(contract)
+    let address = createHash('sha256')
+      .update(contract.code)
+      .digest('base64')
+
+    this.contracts[address] = contract
+    return address
+  }
+
+  /**
+   * save() returns a minimal view of the contracts.
+   * You can serialize this view, send it to another machine,
+   * and pass it to load() to recreate the same host.
+   *
+   */
+  save() {
+    let result = {}
+    Object.keys(this.contracts).forEach(address => {
+      result[address] = {
+        memory: new Uint32Array(this.contracts[address].memory),
+        code: this.contracts[address].code
+      }
+    })
+    return result
+  }
+
+  load(view) {
+    Object.keys(view).forEach(address => {
+      this.contracts[address] = new Contract(view[address].code)
+      this.contracts[address].loadMemory(view[address].memory)
+    })
   }
 }

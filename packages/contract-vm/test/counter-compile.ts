@@ -11,8 +11,8 @@ async function main() {
   contract.increment(49)
 
   // Test multi-contract host
-  let host = new Host({})
-  let address = host.contractStore.addContract(contractWrapper)
+  let host = new Host()
+  let address = host.addContract(contractWrapper)
   let message = { sender: 'judd', to: address, method: 'increment', data: [3] }
 
   function consumeGas(gas) {
@@ -20,10 +20,10 @@ async function main() {
   }
   console.log(host.execute(message, consumeGas))
 
-  let view = host.contractStore.save()
+  let saved = host.save()
 
-  let host2 = new Host({})
-  host2.contractStore.load(view)
+  let host2 = new Host()
+  host2.load(saved)
   console.log(host2.execute(message, consumeGas)) // 106
   console.log(host.execute(message, consumeGas)) // 106
 }
