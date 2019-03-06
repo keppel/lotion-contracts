@@ -61,7 +61,7 @@ export class Host {
     let result = {}
     Object.keys(this.contracts).forEach(address => {
       result[address] = {
-        memory: new Uint32Array(this.contracts[address].memory),
+        memory: new Uint32Array(this.contracts[address].memory.slice()),
         code: this.contracts[address].code
       }
     })
