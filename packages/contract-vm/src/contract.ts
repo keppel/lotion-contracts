@@ -11,7 +11,7 @@ export class Contract {
   private meteredCode
   private consumeGas
 
-  constructor(public code) {
+  constructor(public code, private bindings = {}) {
     this.contract = new Proxy(
       {},
       {
@@ -35,11 +35,7 @@ export class Contract {
     )
 
     this.meteredCode = metering.meterWASM(this.code)
-    this.initialize()
-  }
-
-  initialize() {
-    this.instance = loader.instantiateBuffer(this.meteredCode, {
+    Object.assign(this.bindings, {
       metering: {
         usegas: gas => {
           if (typeof gas === 'number' && gas > 0) {
@@ -50,12 +46,25 @@ export class Contract {
         }
       }
     })
+    this.initialize()
+  }
+
+  initialize() {
+    this.instance = loader.instantiateBuffer(this.meteredCode, this.bindings)
 
     if (!this.instance[CONTRACT_CLASS_NAME]) {
       throw new Error(
         `Contract must an export a class named ${CONTRACT_CLASS_NAME}`
       )
     }
+    /**
+     * TODO: Instead of creating a new instance of this class on each initialize(),
+     * we should just get a js reference to the instance from a pointer.
+     *
+     * For now, there's a kind of surprising behavior: constructors are called for every method call,
+     * possibly invoking external host functions, but any class state mutations are thrown away because
+     * the memory is immediately overwritten with our checkpointed memory.
+     */
     this.contractInstance = new this.instance[CONTRACT_CLASS_NAME]()
     if (!this.memory) {
       this.memory = this.instance.memory.buffer

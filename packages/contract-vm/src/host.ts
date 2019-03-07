@@ -9,6 +9,7 @@
 
 import { Contract } from './contract'
 let { createHash } = require('crypto')
+let loader = require('assemblyscript/lib/loader')
 
 interface Message {
   sender: string
@@ -17,12 +18,20 @@ interface Message {
   data?: Array<any>
 }
 
+interface HostOptions {
+  bindings?: object
+}
+
 type GasMeter = (cost: number) => void
 
 export class Host {
   public contracts = {}
 
-  constructor(opts = {}) {}
+  private bindings
+
+  constructor(options: HostOptions = {}) {
+    this.bindings = options.bindings || {}
+  }
 
   execute(message: Message, consumeGas?: GasMeter) {
     let wrappedContract = this.contracts[message.to]
@@ -41,10 +50,12 @@ export class Host {
     }
   }
 
-  addContract(contract: Contract): string {
+  addContract(code: Buffer): string {
     let address = createHash('sha256')
-      .update(contract.code)
+      .update(code)
       .digest('base64')
+
+    let contract = new Contract(code, this.makeBindings(address))
 
     this.contracts[address] = contract
     return address
@@ -70,8 +81,26 @@ export class Host {
 
   load(view) {
     Object.keys(view).forEach(address => {
-      this.contracts[address] = new Contract(view[address].code)
+      this.contracts[address] = new Contract(
+        view[address].code,
+        this.makeBindings(address)
+      )
       this.contracts[address].loadMemory(view[address].memory)
     })
+  }
+
+  private makeBindings(address) {
+    return {
+      contract: {
+        ...this.bindings,
+        call: (addressPtr, methodPtr, ...args) => {
+          let caller = this.contracts[address]
+          let targetAddress = caller.instance.getString(addressPtr)
+          let method = caller.instance.getString(methodPtr)
+          let target = this.contracts[targetAddress]
+          return target.contract[method](...args)
+        }
+      }
+    }
   }
 }
