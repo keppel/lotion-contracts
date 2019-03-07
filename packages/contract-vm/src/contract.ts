@@ -69,7 +69,7 @@ export class Contract {
   }
 
   loadMemory(memory) {
-    assignMemory(this.instance.memory.buffer, memory)
+    assignMemory(this.instance.memory.buffer, memory.buffer)
   }
 }
 

@@ -42,7 +42,6 @@ export class Host {
   }
 
   addContract(contract: Contract): string {
-    console.log(contract)
     let address = createHash('sha256')
       .update(contract.code)
       .digest('base64')
@@ -60,8 +59,9 @@ export class Host {
   save() {
     let result = {}
     Object.keys(this.contracts).forEach(address => {
+      let memory = Buffer.from(this.contracts[address].memory.slice())
       result[address] = {
-        memory: new Uint32Array(this.contracts[address].memory.slice()),
+        memory,
         code: this.contracts[address].code
       }
     })

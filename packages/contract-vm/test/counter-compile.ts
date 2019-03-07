@@ -1,5 +1,6 @@
 let compile = require('contract-compiler')
 let { Contract, Host } = require('../')
+let { parse, stringify } = require('deterministic-json')
 
 async function main() {
   // Test single contract
@@ -16,15 +17,15 @@ async function main() {
   let message = { sender: 'judd', to: address, method: 'increment', data: [3] }
 
   function consumeGas(gas) {
-    console.log(`consumed ${gas} gas`)
+    //console.log(`consumed ${gas} gas`)
   }
-  console.log(host.execute(message, consumeGas))
+  console.log(host.execute(message, consumeGas)) // 103
 
   let saved = host.save()
-
-  let host2 = new Host()
-  host2.load(saved)
-  console.log(host2.execute(message, consumeGas)) // 106
+  let chkpt = parse(stringify(saved))
+  console.log(host.execute(message, consumeGas)) // 106
+  console.log(host.execute(message, consumeGas)) // 109
+  host.load(chkpt)
   console.log(host.execute(message, consumeGas)) // 106
 }
 main()
