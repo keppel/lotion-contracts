@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^11.9.4",
-    "assemblyscript": "github:assemblyscript/assemblyscript#e623786b426b4649a192b6c47b44ea41acd7d9b8",
+    "assemblyscript": "github:assemblyscript/assemblyscript#5f547131ab77394356df1a43d0e39c7987a3b016",
     "tempy": "^0.2.1"
   }
 }
