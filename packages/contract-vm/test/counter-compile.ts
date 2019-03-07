@@ -23,6 +23,7 @@ async function main() {
   let counter = host.contracts[counterAddress]
   let countifier = host.contracts[countifierAddress]
   console.log(counter.contract.increment(20)) // 20
-  console.log(counter.contract.increment(20)) // 40
+  console.log(countifier.contract.addToCount(10)) // 30
+  console.log(counter.contract.count) // 30
 }
 main()

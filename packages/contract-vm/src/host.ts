@@ -93,19 +93,29 @@ export class Host {
     return {
       contract: {
         ...this.bindings,
-        _call: (addressPtr, methodPtr, ...args) => {
-          console.log('called')
+        _call: (addressPtr, methodPtr, arg, argTypePtr, returnTypePtr) => {
           let caller = this.contracts[address]
-          // let targetAddress = caller.instance.getString(addressPtr)
-          // let method = caller.instance.getString(methodPtr)
-          // let target = this.contracts[targetAddress]
-          // read strings from caller, write into target
-          // let newArgs = args.map(ptr => {
-          //   let str = caller.instance.getString(ptr)
-          //   return target.instance.newString(str)
-          // })
+          let targetAddress = caller.instance.getString(addressPtr)
+          let method = caller.instance.getString(methodPtr)
+          let target = this.contracts[targetAddress]
+          let argType = caller.instance.getString(argTypePtr)
+          let returnType = caller.instance.getString(returnTypePtr)
 
-          // return target.contract[method](...args)
+          if (argType === 'string') {
+            arg = caller.instance.getString(arg)
+          } else if (argType === 'array') {
+            arg = caller.instance.getArray(arg)
+          }
+
+          let result = target.contract[method](arg)
+
+          if (returnType === 'string') {
+            result = target.instance.getString(result)
+          } else if (returnType === 'array') {
+            result = target.instance.getArray(result)
+          }
+
+          return result
         }
       }
     }

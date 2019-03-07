@@ -1,8 +1,6 @@
 import 'allocator/arena'
 export { memory }
 
-import { contract } from '../../../contract-lib/lib'
-
 export class Contract {
   public count: i32 = 0
 
