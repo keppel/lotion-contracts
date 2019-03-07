@@ -93,12 +93,19 @@ export class Host {
     return {
       contract: {
         ...this.bindings,
-        call: (addressPtr, methodPtr, ...args) => {
+        _call: (addressPtr, methodPtr, ...args) => {
+          console.log('called')
           let caller = this.contracts[address]
-          let targetAddress = caller.instance.getString(addressPtr)
-          let method = caller.instance.getString(methodPtr)
-          let target = this.contracts[targetAddress]
-          return target.contract[method](...args)
+          // let targetAddress = caller.instance.getString(addressPtr)
+          // let method = caller.instance.getString(methodPtr)
+          // let target = this.contracts[targetAddress]
+          // read strings from caller, write into target
+          // let newArgs = args.map(ptr => {
+          //   let str = caller.instance.getString(ptr)
+          //   return target.instance.newString(str)
+          // })
+
+          // return target.contract[method](...args)
         }
       }
     }

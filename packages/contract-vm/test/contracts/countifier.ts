@@ -6,16 +6,13 @@ import 'allocator/arena'
 
 //prettier-ignore
 @external('contract', 'call')
-declare function call(address: string, method: string, n: i32): i32;
+declare function _call<I, O>(address: string, method: string, arg: I, thing: bool ): O;
 
 export class Contract {
   constructor() {}
   addTen(): i32 {
-    let currentCount: i32 = call(
-      'PSgD7Oz4ViOZ+FZMN1/KLXDj60EphsUTlC3B2iMmhlk=',
-      'increment',
-      10
-    )
-    return currentCount
+    let n: i32 = 10
+
+    return n
   }
 }
