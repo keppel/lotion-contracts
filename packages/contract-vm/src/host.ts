@@ -8,6 +8,7 @@
  */
 
 import { Contract } from './contract'
+import { makeBindings } from './bindings'
 let { createHash } = require('crypto')
 let loader = require('assemblyscript/lib/loader')
 
@@ -55,7 +56,7 @@ export class Host {
       .update(code)
       .digest('base64')
 
-    let contract = new Contract(code, this.makeBindings(address))
+    let contract = new Contract(code, makeBindings(this, address))
 
     this.contracts[address] = contract
     return address
@@ -83,41 +84,9 @@ export class Host {
     Object.keys(view).forEach(address => {
       this.contracts[address] = new Contract(
         view[address].code,
-        this.makeBindings(address)
+        makeBindings(this, address)
       )
       this.contracts[address].loadMemory(view[address].memory)
     })
-  }
-
-  private makeBindings(address) {
-    return {
-      contract: {
-        ...this.bindings,
-        _call: (addressPtr, methodPtr, arg, argTypePtr, returnTypePtr) => {
-          let caller = this.contracts[address]
-          let targetAddress = caller.instance.getString(addressPtr)
-          let method = caller.instance.getString(methodPtr)
-          let target = this.contracts[targetAddress]
-          let argType = caller.instance.getString(argTypePtr)
-          let returnType = caller.instance.getString(returnTypePtr)
-
-          if (argType === 'string') {
-            arg = caller.instance.getString(arg)
-          } else if (argType === 'array') {
-            arg = caller.instance.getArray(arg)
-          }
-
-          let result = target.contract[method](arg)
-
-          if (returnType === 'string') {
-            result = target.instance.getString(result)
-          } else if (returnType === 'array') {
-            result = target.instance.getArray(result)
-          }
-
-          return result
-        }
-      }
-    }
   }
 }
