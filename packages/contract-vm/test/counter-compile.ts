@@ -15,7 +15,7 @@ async function main() {
   let countifierAddress = host.addContract(countifierCode)
   // let message = { sender: 'judd', to: address, method: 'increment', data: [3] }
 
-  function consumeGas(gas) {
+  function consumeGas(gas: any) {
     console.log(`consumed ${gas} gas`)
   }
   // console.log(host.execute(message, consumeGas)) // 103

@@ -2,22 +2,24 @@ let loader = require('assemblyscript/lib/loader')
 const CONTRACT_CLASS_NAME = 'Contract'
 let metering = require('wasm-metering')
 
+type GasMeter = (cost: number) => void
+
 export class Contract {
-  public instance
-  public memory
-  public contract
-  public contractInstance
+  public instance: any
+  public memory: any
+  public contract: any
+  public contractInstance: any
 
-  private meteredCode
-  private consumeGas
+  private meteredCode: Buffer
+  private consumeGas: GasMeter | undefined
 
-  constructor(public code, private bindings = {}) {
+  constructor(public code: Buffer, private bindings = {}) {
     this.contract = new Proxy(
       {},
       {
         get: (target, name, receiver): any => {
           if (typeof this.contractInstance[name] === 'function') {
-            return (...args) => {
+            return (...args: any[]) => {
               this.initialize()
               return this.contractInstance[name](...args)
             }
@@ -37,7 +39,7 @@ export class Contract {
     this.meteredCode = metering.meterWASM(this.code)
     Object.assign(this.bindings, {
       metering: {
-        usegas: gas => {
+        usegas: (gas: number) => {
           if (typeof gas === 'number' && gas > 0) {
             if (this.consumeGas) {
               this.consumeGas(gas)
@@ -73,16 +75,16 @@ export class Contract {
     this.memory = this.instance.memory.buffer
   }
 
-  useMeter(consumeGas?) {
+  useMeter(consumeGas?: GasMeter) {
     this.consumeGas = consumeGas
   }
 
-  loadMemory(memory) {
+  loadMemory(memory: any) {
     assignMemory(this.instance.memory.buffer, memory.buffer)
   }
 }
 
-function assignMemory(dest, src) {
+function assignMemory(dest: any, src: any) {
   let a = new Uint32Array(src)
   let b = new Uint32Array(dest)
   Object.assign(b, a)

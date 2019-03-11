@@ -24,18 +24,28 @@ interface HostOptions {
 }
 
 type GasMeter = (cost: number) => void
+interface ContractMap {
+  [index: string]: Contract
+}
+
+interface SavedView {
+  [index: string]: {
+    memory: Buffer
+    code: Buffer
+  }
+}
 
 export class Host {
-  public contracts = {}
+  public contracts: ContractMap = {}
 
-  private bindings
+  public bindings: object
 
   constructor(options: HostOptions = {}) {
     this.bindings = options.bindings || {}
   }
 
   execute(message: Message, consumeGas?: GasMeter) {
-    let wrappedContract = this.contracts[message.to]
+    let wrappedContract: Contract = this.contracts[message.to]
     let { contract } = wrappedContract
     if (typeof contract[message.method] !== 'function') {
       throw new Error('Contract has no method called ' + message.method)
@@ -69,7 +79,7 @@ export class Host {
    *
    */
   save() {
-    let result = {}
+    let result: SavedView = {}
     Object.keys(this.contracts).forEach(address => {
       let memory = Buffer.from(this.contracts[address].memory.slice())
       result[address] = {
@@ -80,7 +90,7 @@ export class Host {
     return result
   }
 
-  load(view) {
+  load(view: SavedView) {
     Object.keys(view).forEach(address => {
       this.contracts[address] = new Contract(
         view[address].code,

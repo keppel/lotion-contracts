@@ -5,8 +5,10 @@
     "moduleResolution": "node",
     "target": "es5",
     "experimentalDecorators": true,
-    "lib": ["esnext", "es2015"]
+    "lib": ["esnext", "es2015"],
+    "strict": true,
+    "downlevelIteration": true
   },
-  "include": ["src/"],
+  "include": ["src/**/*.ts"],
   "compileOnSave": true
 }

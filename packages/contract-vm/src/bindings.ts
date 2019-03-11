@@ -1,9 +1,18 @@
-export function makeBindings(host, address) {
+import { Host } from './host'
+import { Contract } from './Contract'
+
+export function makeBindings(host: Host, address: string) {
   return {
     contract: {
       ...host.bindings,
-      _call: (addressPtr, methodPtr, arg, argTypePtr, returnTypePtr) => {
-        let caller = host.contracts[address]
+      _call: (
+        addressPtr: number,
+        methodPtr: number,
+        arg: number,
+        argTypePtr: number,
+        returnTypePtr: number
+      ) => {
+        let caller: Contract = host.contracts[address]
         let targetAddress = caller.instance.getString(addressPtr)
         let method = caller.instance.getString(methodPtr)
         let target = host.contracts[targetAddress]
