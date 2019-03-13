@@ -3,6 +3,8 @@ import { Contract } from './Contract'
 
 export function makeBindings(host: Host, address: string) {
   return {
+    Math: {},
+    Date: {},
     contract: {
       ...host.bindings,
       _call: (
