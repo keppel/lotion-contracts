@@ -3,20 +3,19 @@
  *
  * This class is used from Web8 and Lotion. The ContractStore is pluggable;
  * you may lazily initialize contracts by fetching contract code as a light client,
- * as in the case of Web8. Or, in the case of cross-chain contract interaction Lotion,
+ * as in the case of Web8. Or, in the case of cross-chain contract interaction,
  * the Contract instances returned by the provided ContractStore may do IBC stuff.
  */
 
 import { Contract } from './contract'
 import { makeBindings } from './bindings'
 let { createHash } = require('crypto')
-let loader = require('assemblyscript/lib/loader')
 
 interface Message {
   sender: string
   to: string
   method: string
-  data?: Array<any>
+  data?: any
 }
 
 interface HostOptions {

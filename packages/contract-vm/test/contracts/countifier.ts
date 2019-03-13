@@ -16,4 +16,6 @@ export class Contract {
     )
     return count
   }
+
+  // doGreet(subject: string) {}
 }
