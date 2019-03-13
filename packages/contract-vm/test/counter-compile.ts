@@ -19,12 +19,17 @@ async function main() {
   console.log('greeter address:')
   console.log(greeterAddress)
 
-  // let message = { sender: 'judd', to: address, method: 'increment', data: [3] }
+  let message = {
+    sender: 'judd',
+    to: counterAddress,
+    method: 'increment',
+    data: [3]
+  }
 
   function consumeGas(gas: any) {
     console.log(`consumed ${gas} gas`)
   }
-  // console.log(host.execute(message, consumeGas)) // 103
+  console.log(host.execute(message, consumeGas))
 
   let counter = host.contracts[counterAddress]
   let countifier = host.contracts[countifierAddress]

@@ -27,6 +27,7 @@ export function makeBindings(host: Host, address: string) {
           arg = caller.instance.getArray(arg)
         }
 
+        target.useMeter(host.currentMeter)
         let result = target.contract[method](arg)
 
         if (returnType === 'string') {

@@ -38,6 +38,7 @@ export class Host {
   public contracts: ContractMap = {}
 
   public bindings: object
+  public currentMeter: GasMeter | null = null
 
   constructor(options: HostOptions = {}) {
     this.bindings = options.bindings || {}
@@ -50,12 +51,16 @@ export class Host {
       throw new Error('Contract has no method called ' + message.method)
     }
     try {
+      if (consumeGas) {
+        this.currentMeter = consumeGas
+      }
       wrappedContract.useMeter(consumeGas)
       let result = contract[message.method](...message.data)
       return result
     } catch (e) {
       throw e
     } finally {
+      this.currentMeter = null
       wrappedContract.useMeter()
     }
   }

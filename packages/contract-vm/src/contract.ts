@@ -2,7 +2,7 @@ let loader = require('assemblyscript/lib/loader')
 const CONTRACT_CLASS_NAME = 'Contract'
 let metering = require('wasm-metering')
 
-type GasMeter = (cost: number) => void
+type GasMeter = ((cost: number) => void) | null
 
 export class Contract {
   public instance: any
