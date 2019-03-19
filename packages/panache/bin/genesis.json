@@ -1,0 +1,25 @@
+{
+  "genesis_time": "2019-01-27T20:59:51.03020916Z",
+  "chain_id": "panache",
+  "consensus_params": {
+    "block_size_params": {
+      "max_bytes": "22020096",
+      "max_gas": "-1"
+    },
+    "evidence_params": {
+      "max_age": "100000"
+    }
+  },
+  "validators": [
+    {
+      "address": "7054961F0E72BCBE9639D97C4C13BA6C802C12D5",
+      "pub_key": {
+        "type": "tendermint/PubKeyEd25519",
+        "value": "dR4XM7xsLsqD1bKw4y7rdmOukhgsB3AZUYxImK1VjKc="
+      },
+      "power": "10",
+      "name": ""
+    }
+  ],
+  "app_hash": ""
+}
