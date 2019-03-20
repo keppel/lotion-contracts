@@ -1,15 +1,16 @@
 let metering = require('metering')
 let SES = require('ses')
 
-type GasMeter = ((value: any) => any) | null
-
 export class Contract {
-  public contract: any
+  public exports: any
 
   private meteredCode: string
-  private consumeGas: GasMeter | undefined
 
-  constructor(public code: string, private bindings = {}) {
+  constructor(
+    public code: string,
+    private bindings = {},
+    private consumeGas?: any
+  ) {
     // TODO: randomly generated metering function name to prevent shadowing
     let meteringFunctionName = 'consumeGas'
     this.meteredCode = metering('consumeGas', this.code)
@@ -17,18 +18,19 @@ export class Contract {
       consoleMode: 'allow',
       errorStackMode: 'allow'
     })
-    let contractExports = {}
-    rootRealm.evaluate(this.meteredCode, {
-      [meteringFunctionName]: this.consumeGas,
+    this.exports = rootRealm.evaluate(this.meteredCode, {
+      [meteringFunctionName]: (value: any) => {
+        if (this.consumeGas) {
+          this.consumeGas()
+        }
+        return value
+      },
       JSON: {},
-      module: { exports: contractExports },
-      exports: contractExports
+      module: { exports: {} }
     })
-
-    this.contract = contractExports
   }
 
-  useMeter(consumeGas?: GasMeter) {
+  useMeter(consumeGas?: any) {
     this.consumeGas = consumeGas
   }
 }
