@@ -15,6 +15,7 @@
     "@types/webassembly-js-api": "0.0.2",
     "assemblyscript": "github:assemblyscript/assemblyscript#5f547131ab77394356df1a43d0e39c7987a3b016",
     "metering": "github:nomic-io/metering",
+    "ses": "^0.4.0",
     "wasm-metering": "^0.2.1"
   },
   "devDependencies": {
