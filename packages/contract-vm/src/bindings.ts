@@ -1,43 +1,40 @@
 import { Host } from './host'
-import { Contract } from './Contract'
+let { parse, stringify } = require('deterministic-json')
 
 export function makeBindings(host: Host, address: string) {
   return {
-    Math: {},
-    Date: {},
     contract: {
-      ...host.bindings,
-      _call: (
-        addressPtr: number,
-        methodPtr: number,
-        arg: number,
-        argTypePtr: number,
-        returnTypePtr: number
-      ) => {
-        let caller: Contract = host.contracts[address]
-        let targetAddress = caller.instance.getString(addressPtr)
-        let method = caller.instance.getString(methodPtr)
+      wrap(targetAddress: string) {
         let target = host.contracts[targetAddress]
-        let argType = caller.instance.getString(argTypePtr)
-        let returnType = caller.instance.getString(returnTypePtr)
-
-        if (argType === 'string') {
-          arg = caller.instance.getString(arg)
-        } else if (argType === 'array') {
-          arg = caller.instance.getArray(arg)
+        if (target) {
+          return protect(target.exports)
+        } else {
+          throw new Error(
+            'Target contract does not exist at address ' + targetAddress
+          )
         }
-
-        target.useMeter(host.currentMeter)
-        let result = target.contract[method](arg)
-
-        if (returnType === 'string') {
-          result = target.instance.getString(result)
-        } else if (returnType === 'array') {
-          result = target.instance.getArray(result)
-        }
-
-        return result
+      },
+      getBalance() {
+        return 0
+      },
+      getAddress() {
+        return address
       }
     }
   }
+}
+
+function protect(contractExports: any) {
+  return new Proxy(contractExports, {
+    get(target, prop) {
+      if (typeof target[prop] === 'function') {
+        return target[prop]
+      } else {
+        return parse(stringify(target[prop]))
+      }
+    },
+    set(target, prop, value): any {
+      throw new Error('Wrapped contracts are readonly')
+    }
+  })
 }
