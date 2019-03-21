@@ -9,7 +9,6 @@
 
 import { Contract } from './contract'
 import { makeBindings } from './bindings'
-let { createHash } = require('crypto')
 
 interface Message {
   sender: string
@@ -27,53 +26,34 @@ interface ContractMap {
   [index: string]: Contract
 }
 
-interface SavedView {
-  [index: string]: {
-    memory: Buffer
-    code: Buffer
-  }
-}
-
 export class Host {
   public contracts: ContractMap = {}
+  public consumeGas: GasMeter | null = null
 
-  public bindings: object
-  public currentMeter: GasMeter | null = null
+  public makeBindings: any
 
   constructor(options: HostOptions = {}) {
-    this.bindings = options.bindings || {}
+    this.makeBindings = makeBindings.bind(this, this)
   }
 
   execute(message: Message, consumeGas?: GasMeter) {
-    let wrappedContract: Contract = this.contracts[message.to]
-    let { contract } = wrappedContract
-    if (typeof contract[message.method] !== 'function') {
+    if (consumeGas) {
+      this.consumeGas = consumeGas
+    }
+    let contract: Contract = this.contracts[message.to]
+    if (typeof contract.exports[message.method] !== 'function') {
       throw new Error('Contract has no method called ' + message.method)
     }
-    try {
-      if (consumeGas) {
-        this.currentMeter = consumeGas
-      }
-      wrappedContract.useMeter(consumeGas)
-      let result = contract[message.method](...message.data)
-      return result
-    } catch (e) {
-      throw e
-    } finally {
-      this.currentMeter = null
-      wrappedContract.useMeter()
-    }
+
+    let result = contract.exports[message.method](...message.data)
+    return result
   }
 
-  addContract(code: Buffer): string {
-    let address = createHash('sha256')
-      .update(code)
-      .digest('base64')
+  addContract(code: string): string {
+    let contract = new Contract(code, {}, this)
 
-    let contract = new Contract(code, makeBindings(this, address))
-
-    this.contracts[address] = contract
-    return address
+    this.contracts[contract.address] = contract
+    return contract.address
   }
 
   /**
@@ -82,25 +62,25 @@ export class Host {
    * and pass it to load() to recreate the same host.
    *
    */
-  save() {
-    let result: SavedView = {}
-    Object.keys(this.contracts).forEach(address => {
-      let memory = Buffer.from(this.contracts[address].memory.slice())
-      result[address] = {
-        memory,
-        code: this.contracts[address].code
-      }
-    })
-    return result
-  }
+  // save() {
+  //   let result: SavedView = {}
+  //   Object.keys(this.contracts).forEach(address => {
+  //     let memory = Buffer.from(this.contracts[address].memory.slice())
+  //     result[address] = {
+  //       memory,
+  //       code: this.contracts[address].code
+  //     }
+  //   })
+  //   return result
+  // }
 
-  load(view: SavedView) {
-    Object.keys(view).forEach(address => {
-      this.contracts[address] = new Contract(
-        view[address].code,
-        makeBindings(this, address)
-      )
-      this.contracts[address].loadMemory(view[address].memory)
-    })
-  }
+  // load(view: SavedView) {
+  //   Object.keys(view).forEach(address => {
+  //     this.contracts[address] = new Contract(
+  //       view[address].code,
+  //       makeBindings(this, address)
+  //     )
+  //     this.contracts[address].loadMemory(view[address].memory)
+  //   })
+  // }
 }
