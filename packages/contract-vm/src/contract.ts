@@ -1,18 +1,23 @@
 let metering = require('metering')
 let SES = require('ses')
 let { stringify, parse } = require('deterministic-json')
+let bs58 = require('bs58')
+let { createHash } = require('crypto')
+import { Host } from './host'
 
 export class Contract {
   public exports: any
 
   public state: any
+  public address: string
   private meteredCode: string
 
-  constructor(
-    public code: string,
-    private consumeGas?: any,
-    initialState: any = {}
-  ) {
+  constructor(public code: string, initialState: any = {}, private host: Host) {
+    this.address = bs58.encode(
+      createHash('sha256')
+        .update(code)
+        .digest()
+    )
     // TODO: randomly generated metering function name to prevent shadowing
     this.state = initialState
     let meteringFunctionName = 'consumeGas'
