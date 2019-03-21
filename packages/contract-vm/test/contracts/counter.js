@@ -1,7 +1,8 @@
 module.exports = {
   count: 0,
-  increment() {
-    this.count++
+  increment(n = 1) {
+    this.count += n
     return this.count
-  }
+  },
+  things: []
 }
