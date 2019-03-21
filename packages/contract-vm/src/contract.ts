@@ -24,13 +24,14 @@ export class Contract {
     this.exports = new Proxy(
       rootRealm.evaluate(this.meteredCode, {
         [meteringFunctionName]: (value: any) => {
-          if (this.consumeGas) {
-            this.consumeGas()
+          if (this.host.consumeGas) {
+            this.host.consumeGas(1)
           }
           return value
         },
         JSON: {},
-        module: { exports: {} }
+        module: { exports: {} },
+        ...this.host.makeBindings(this.address)
       }),
       {
         get: (target, key) => {
@@ -54,9 +55,5 @@ export class Contract {
 
   initialize() {
     Object.assign(this.exports, this.state)
-  }
-
-  useMeter(consumeGas?: any) {
-    this.consumeGas = consumeGas
   }
 }
