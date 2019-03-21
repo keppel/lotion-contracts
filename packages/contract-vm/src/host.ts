@@ -9,6 +9,7 @@
 
 import { Contract } from './contract'
 import { makeBindings } from './bindings'
+let { stringify, parse } = require('deterministic-json')
 
 interface Message {
   sender: string
@@ -24,6 +25,12 @@ interface HostOptions {
 type GasMeter = (cost: number) => void
 interface ContractMap {
   [index: string]: Contract
+}
+interface SavedView {
+  [index: string]: {
+    code: string
+    state: any
+  }
 }
 
 export class Host {
@@ -49,8 +56,8 @@ export class Host {
     return result
   }
 
-  addContract(code: string): string {
-    let contract = new Contract(code, {}, this)
+  addContract(code: string, state: any = {}): string {
+    let contract = new Contract(code, state, this)
 
     this.contracts[contract.address] = contract
     return contract.address
@@ -62,25 +69,21 @@ export class Host {
    * and pass it to load() to recreate the same host.
    *
    */
-  // save() {
-  //   let result: SavedView = {}
-  //   Object.keys(this.contracts).forEach(address => {
-  //     let memory = Buffer.from(this.contracts[address].memory.slice())
-  //     result[address] = {
-  //       memory,
-  //       code: this.contracts[address].code
-  //     }
-  //   })
-  //   return result
-  // }
+  save() {
+    let result: SavedView = {}
+    Object.keys(this.contracts).forEach(address => {
+      result[address] = {
+        code: this.contracts[address].code,
+        state: parse(stringify(this.contracts[address].state))
+      }
+    })
+    return result
+  }
 
-  // load(view: SavedView) {
-  //   Object.keys(view).forEach(address => {
-  //     this.contracts[address] = new Contract(
-  //       view[address].code,
-  //       makeBindings(this, address)
-  //     )
-  //     this.contracts[address].loadMemory(view[address].memory)
-  //   })
-  // }
+  load(view: SavedView) {
+    this.contracts = {}
+    Object.keys(view).forEach(address => {
+      this.addContract(view[address].code, view[address].state)
+    })
+  }
 }
