@@ -20,6 +20,7 @@ interface Message {
 
 interface HostOptions {
   bindings?: object
+  restrictedMethods?: string[]
 }
 
 type GasMeter = (cost: number) => void
@@ -38,9 +39,13 @@ export class Host {
   public consumeGas: GasMeter | null = null
 
   public makeBindings: any
+  public restrictedMethods: string[] = []
 
   constructor(options: HostOptions = {}) {
     this.makeBindings = makeBindings.bind(this, this, options.bindings)
+    if (options.restrictedMethods) {
+      this.restrictedMethods = options.restrictedMethods
+    }
   }
 
   execute(message: Message, consumeGas?: GasMeter) {

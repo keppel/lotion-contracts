@@ -7,7 +7,7 @@ export function makeBindings(host: Host, address: string) {
       wrap(targetAddress: string) {
         let target = host.contracts[targetAddress]
         if (target) {
-          return protect(target.exports)
+          return protect(host, target.exports)
         } else {
           throw new Error(
             'Target contract does not exist at address ' + targetAddress
@@ -24,10 +24,13 @@ export function makeBindings(host: Host, address: string) {
   }
 }
 
-function protect(contractExports: any) {
+function protect(host: Host, contractExports: any) {
   return new Proxy(contractExports, {
     get(target, prop) {
-      if (typeof target[prop] === 'function') {
+      if (
+        typeof target[prop] === 'function' &&
+        host.restrictedMethods.indexOf(prop) === -1
+      ) {
         return target[prop]
       } else {
         return parse(stringify(target[prop]))
