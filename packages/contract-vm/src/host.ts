@@ -40,7 +40,7 @@ export class Host {
   public makeBindings: any
 
   constructor(options: HostOptions = {}) {
-    this.makeBindings = makeBindings.bind(this, this)
+    this.makeBindings = makeBindings.bind(this, this, options.bindings)
   }
 
   execute(message: Message, consumeGas?: GasMeter) {

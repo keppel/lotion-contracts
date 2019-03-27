@@ -14,7 +14,7 @@ function loadWallet(client) {
   }
 
   // add {route: 'someroute'} if coins module has a route
-  return coins.wallet(privKey, client)
+  return coins.wallet(privKey, client, { route: 'pbtc' })
 }
 
 exports.loadWallet = loadWallet

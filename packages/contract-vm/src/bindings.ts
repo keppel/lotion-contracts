@@ -3,7 +3,7 @@ let { parse, stringify } = require('deterministic-json')
 
 export function makeBindings(host: Host, address: string) {
   return {
-    contract: {
+    Contract: {
       wrap(targetAddress: string) {
         let target = host.contracts[targetAddress]
         if (target) {
