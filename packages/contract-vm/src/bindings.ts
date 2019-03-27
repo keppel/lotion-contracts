@@ -26,7 +26,7 @@ export function makeBindings(host: Host, address: string) {
 
 function protect(host: Host, contractExports: any) {
   return new Proxy(contractExports, {
-    get(target, prop) {
+    get(target, prop: string) {
       if (
         typeof target[prop] === 'function' &&
         host.restrictedMethods.indexOf(prop) === -1
