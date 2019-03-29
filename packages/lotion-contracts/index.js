@@ -1,5 +1,7 @@
 let { Host } = require('contract-vm')
 let coins = require('coins')
+let { parse, stringify } = require('deterministic-json')
+let makeBindings = require('./lib/bindings.js')
 
 module.exports = function coinsHandler(opts = {}) {
   // Initialize contract VM
@@ -12,8 +14,34 @@ module.exports = function coinsHandler(opts = {}) {
     },
     initialize() {
       if (!host) {
-        host = new Host()
+        host = new Host({})
       }
+    },
+    onBlock(state, context) {
+      if (!host) {
+        host = new Host({})
+      }
+
+      Object.keys(host.contracts).forEach(address => {
+        host.setBindings(makeBindings(state, context, { to: address }, host))
+        host.consumeGas = function(gas) {
+          context.burn(address, gas)
+        }
+        host.load(state.contracts)
+        try {
+          if (typeof host.contracts[address].exports.onBlock !== 'function') {
+            return
+          }
+          if (context.getAccount(address).balance < 10) {
+            return
+          }
+          host.contracts[address].exports.onBlock()
+          state.contracts = host.save()
+        } catch (e) {
+          console.log('Error in onBlock for ' + address + ':')
+          console.log(e)
+        }
+      })
     },
     onOutput(output, state, context) {
       if (!host) {
@@ -31,8 +59,8 @@ module.exports = function coinsHandler(opts = {}) {
         /**
          * Load saved host state from lotion store
          */
+        host.setBindings(makeBindings(state, context, output, host))
         host.load(state.contracts)
-
         try {
           host.execute(
             {
@@ -54,6 +82,8 @@ module.exports = function coinsHandler(opts = {}) {
            * Error is caught and ignored here because we want to consume gas
            * even if the message causes an error.
            */
+          console.log('caught error:')
+          console.log(e)
         }
       }
     }

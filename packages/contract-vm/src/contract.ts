@@ -36,7 +36,7 @@ export class Contract {
         },
         JSON: {},
         module: { exports: {} },
-        ...this.host.makeBindings(this.address)
+        ...this.host.bindings
       }),
       {
         get: (target, key) => {

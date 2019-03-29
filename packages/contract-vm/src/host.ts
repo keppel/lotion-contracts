@@ -8,18 +8,18 @@
  */
 
 import { Contract } from './contract'
-import { makeBindings } from './bindings'
 let { stringify, parse } = require('deterministic-json')
+let getPath = require('lodash.get')
 
 interface Message {
   sender: string
   to: string
-  method: string
+  method: string | Array<string>
   data?: any
 }
 
 interface HostOptions {
-  bindings?: object
+  bindings?: any
   restrictedMethods?: string[]
 }
 
@@ -38,14 +38,19 @@ export class Host {
   public contracts: ContractMap = {}
   public consumeGas: GasMeter | null = null
 
-  public makeBindings: any
+  public bindings: object = {}
   public restrictedMethods: string[] = []
 
   constructor(options: HostOptions = {}) {
-    this.makeBindings = makeBindings.bind(this, this, options.bindings)
+    // this.makeBindings = makeBindings.bind(this, this)
+
     if (options.restrictedMethods) {
       this.restrictedMethods = options.restrictedMethods
     }
+  }
+
+  setBindings(bindings: object) {
+    this.bindings = bindings
   }
 
   execute(message: Message, consumeGas?: GasMeter) {
@@ -53,11 +58,14 @@ export class Host {
       this.consumeGas = consumeGas
     }
     let contract: Contract = this.contracts[message.to]
-    if (typeof contract.exports[message.method] !== 'function') {
+    if (typeof message.method === 'string') {
+      message.method = [message.method]
+    }
+    if (typeof getPath(contract.exports, message.method) !== 'function') {
       throw new Error('Contract has no method called ' + message.method)
     }
-
-    let result = contract.exports[message.method](...message.data)
+    let method = getPath(contract.exports, message.method)
+    let result = method.call(contract.exports, ...message.data)
     return result
   }
 
