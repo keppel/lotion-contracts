@@ -1,0 +1,25 @@
+{
+  "genesis_time": "2019-04-03T08:55:56.131309565Z",
+  "chain_id": "nomic-v0.0.2",
+  "consensus_params": {
+    "block_size_params": {
+      "max_bytes": "22020096",
+      "max_gas": "-1"
+    },
+    "evidence_params": {
+      "max_age": "100000"
+    }
+  },
+  "validators": [
+    {
+      "address": "AB2312824CCEABA631C63E8218C2BDC2FA6CBF18",
+      "pub_key": {
+        "type": "tendermint/PubKeyEd25519",
+        "value": "I6uNFIqa8EZKaBvYWvw+BKwhfQ0h3Ioqmm7y+HV/c4U="
+      },
+      "power": "10",
+      "name": ""
+    }
+  ],
+  "app_hash": ""
+}
