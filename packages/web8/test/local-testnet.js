@@ -11,10 +11,10 @@ async function main() {
   let counter = web8.getContract(contractAddress)
   let delegator = web8.getContract(delegatorAddress)
 
-  console.log(await counter.count)
+  // console.log(await counter.count)
   // console.log(await delegator.doCall(contractAddress, 'increment', 3))
 
-  // console.log(await web8.client.state.pbtc.accounts.mappum)
+  console.log(await web8.client.state.pbtc.accounts.mappum)
   // console.log(await counter.claimFunds('mappum', 123))
   // console.log(web8)
   // console.log(await contracts[counterAddress].count)

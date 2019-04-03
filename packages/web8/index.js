@@ -7,7 +7,7 @@ let { Host } = require('contract-vm')
 let getPath = require('lodash.get')
 
 class Web8 {
-  constructor(gci) {
+  constructor(gci ='4288a3cfd6928dd67564b1448db47efc9e87bfe7bc7b96f05353e47e9d422ca5') {
     this.gci = gci
     this.host = new Host({})
   }

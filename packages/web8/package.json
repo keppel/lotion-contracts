@@ -1,6 +1,6 @@
 {
   "name": "web8",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -15,7 +15,7 @@
   "dependencies": {
     "bs58": "^4.0.1",
     "coins": "^4.5.0",
-    "contract-vm": "file:../contract-vm",
+    "contract-vm": "0.0.0",
     "lodash.get": "^4.4.2",
     "lotion-connect": "^0.1.12",
     "proxmise": "^1.1.0"
