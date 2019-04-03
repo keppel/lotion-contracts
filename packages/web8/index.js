@@ -53,7 +53,7 @@ class Web8 {
     this.client = await connect(this.gci)
     }
     else {
-      this.client = await connect(this.gci, ['ws://nomicworld.com:1338'])
+      this.client = await connect(this.gci, {nodes: ['ws://nomicworld.com:1338']})
     }
     this.wallet = loadWallet(this.client)
   }
