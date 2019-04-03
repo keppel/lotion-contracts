@@ -6,8 +6,9 @@ let Proxmise = require('proxmise')
 let { Host } = require('contract-vm')
 let getPath = require('lodash.get')
 
+const NOMIC_GCI = '4288a3cfd6928dd67564b1448db47efc9e87bfe7bc7b96f05353e47e9d422ca5'
 class Web8 {
-  constructor(gci ='4288a3cfd6928dd67564b1448db47efc9e87bfe7bc7b96f05353e47e9d422ca5') {
+  constructor(gci) {
     this.gci = gci
     this.host = new Host({})
   }
@@ -48,7 +49,12 @@ class Web8 {
   }
 
   async initialize() {
+    if(this.gci) {
     this.client = await connect(this.gci)
+    }
+    else {
+      this.client = await connect(this.gci, ['ws://nomicworld.com:1338'])
+    }
     this.wallet = loadWallet(this.client)
   }
 
