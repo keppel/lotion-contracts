@@ -53,7 +53,7 @@ class Web8 {
     this.client = await connect(this.gci)
     }
     else {
-      this.client = await connect(NOMIC_GCI, {nodes: ['ws://nomicworld.com:1338']})
+      this.client = await connect(NOMIC_GCI, {nodes: ['ws://nomicworld.com:1338'], genesis: require('./lib/genesis/nomic-v0.0.2.json')})
     }
     this.wallet = loadWallet(this.client)
   }
