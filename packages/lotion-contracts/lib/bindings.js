@@ -1,11 +1,11 @@
 let coins = require('coins')
 let SES = require('ses')
 
-module.exports = function(state, context, coinsOutput, host) {
+module.exports = function(state, context, info, host) {
   let s = SES.makeSESRootRealm()
 
   function makeEndowments() {
-    let address = coinsOutput.to
+    let address = info.to
 
     function protect(host, contractExports) {
       return new Proxy(contractExports, {
@@ -56,14 +56,21 @@ module.exports = function(state, context, coinsOutput, host) {
           return address
         },
         getTransaction() {
-          if (!context.transaction) {
-            return
-          }
-          return {
-            senderAddress: coins.addressHash(
-              context.transaction.from[0].pubkey
-            ),
-            amount: coinsOutput.amount
+          if (context.transaction) {
+            return {
+              senderAddress: coins.addressHash(
+                context.transaction.from[0].pubkey
+              ),
+              amount: info.amount
+            }
+          } else {
+            /**
+             * onBlock initiated this
+             */
+            return {
+              senderAddress: info.senderAddress,
+              amount: 0
+            }
           }
         },
         wrap(targetAddress) {
@@ -82,7 +89,7 @@ module.exports = function(state, context, coinsOutput, host) {
 
   let safeMakeEndowments = s.evaluate(`(${makeEndowments})`, {
     context,
-    coinsOutput,
+    info,
     host
   })
   return safeMakeEndowments()

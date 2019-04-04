@@ -23,7 +23,14 @@ module.exports = function coinsHandler(opts = {}) {
       }
 
       Object.keys(host.contracts).forEach(address => {
-        host.setBindings(makeBindings(state, context, { to: address }, host))
+        host.setBindings(
+          makeBindings(
+            state,
+            context,
+            { to: address, senderAddress: address },
+            host
+          )
+        )
         host.consumeGas = function(gas) {
           context.burn(address, gas)
         }
