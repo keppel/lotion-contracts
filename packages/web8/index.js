@@ -14,7 +14,7 @@ class Web8 {
     this.host = new Host({})
   }
 
-  getContract(address, opt = {}) {
+  getContract(address, opts = {}) {
     /**
      * Build contract client proxy
      */
