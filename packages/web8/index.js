@@ -6,14 +6,15 @@ let Proxmise = require('proxmise')
 let { Host } = require('contract-vm')
 let getPath = require('lodash.get')
 
-const NOMIC_GCI = '4288a3cfd6928dd67564b1448db47efc9e87bfe7bc7b96f05353e47e9d422ca5'
+const NOMIC_GCI =
+  '4288a3cfd6928dd67564b1448db47efc9e87bfe7bc7b96f05353e47e9d422ca5'
 class Web8 {
   constructor(gci) {
     this.gci = gci
     this.host = new Host({})
   }
 
-  getContract(address) {
+  getContract(address, opt = {}) {
     /**
      * Build contract client proxy
      */
@@ -27,14 +28,17 @@ class Web8 {
         }
       },
       async (path, ...args) => {
-        await this.prepareHost(address)
-        this.sendMessage({
-          to: address,
-          method: path,
-          data: args,
-          amount: 0
-        })
-        return
+        if (opts.dry) {
+          await this.prepareHost(address)
+          return getPath(this.host.contracts[address].exports, path)(...args)
+        } else {
+          this.sendMessage({
+            to: address,
+            method: path,
+            data: args,
+            amount: 0
+          })
+        }
       }
     )
   }
@@ -46,15 +50,22 @@ class Web8 {
      */
     let savedHost = await this.client.state.pbtc.contract.contracts
     this.host.load(savedHost)
+    if (!this.host.contracts[address]) {
+      throw new Error('Contract with address ' + address + ' does not exist')
+    }
   }
 
   async initialize() {
-    if(this.gci) {
-    this.client = await connect(this.gci)
-    }
-    else {
-      this.client = await connect(NOMIC_GCI, { nodes: ['ws://134.209.50.224:1338'], genesis: require('./lib/genesis/nomic-v0.0.2.json')})
-      
+    if (this.gci) {
+      this.client = await connect(this.gci)
+    } else {
+      this.client = await connect(
+        NOMIC_GCI,
+        {
+          nodes: ['ws://134.209.50.224:1338'],
+          genesis: require('./lib/genesis/nomic-v0.0.2.json')
+        }
+      )
     }
     this.wallet = loadWallet(this.client)
   }
