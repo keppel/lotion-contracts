@@ -21,8 +21,7 @@ module.exports = function coinsHandler(opts = {}) {
       if (!host) {
         host = new Host({})
       }
-
-      Object.keys(host.contracts).forEach(address => {
+      Object.keys(state.contracts).forEach(address => {
         host.setBindings(
           makeBindings(
             state,
