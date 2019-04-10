@@ -21,3 +21,27 @@ test('saving and loading hosts', function(t) {
   t.equals(otherHost.contracts[counterAddress].exports.count, 7) // 7
   t.end()
 })
+
+test('gas consumption', function(t) {
+  let gasHogCode = fs.readFileSync('./test/contracts/gashog.js').toString()
+
+  let host = new Host({})
+  let hogAddress = host.addContract(gasHogCode)
+
+  let gasConsumed = 0
+
+  host.consumeGas = function() {
+    gasConsumed++
+    if (gasConsumed >= 100) {
+      throw new Error('out of gas')
+    }
+  }
+
+  try {
+    host.contracts[hogAddress].exports.loopForever()
+    t.fail()
+  } catch (e) {
+    t.equals(gasConsumed, 100)
+    t.end()
+  }
+})

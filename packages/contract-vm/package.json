@@ -15,7 +15,7 @@
     "bs58": "^4.0.1",
     "lodash.get": "^4.4.2",
     "metering": "0.0.0",
-    "modbox": "^0.1.0",
+    "modbox": "^0.1.2",
     "ses": "^0.4.0"
   },
   "devDependencies": {

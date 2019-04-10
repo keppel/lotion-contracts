@@ -1,6 +1,4 @@
-let metering = require('metering')
 let modbox = require('modbox')
-let { stringify, parse } = require('deterministic-json')
 let bs58 = require('bs58')
 let { createHash } = require('crypto')
 import { Host } from './host'
@@ -32,9 +30,9 @@ export class Contract {
           ...this.host.bindings
         },
         computeLimit: Infinity,
-        onBurn() {
-          if (host.consumeGas) {
-            host.consumeGas(1)
+        onBurn: () => {
+          if (this.host.consumeGas) {
+            this.host.consumeGas(1)
           }
         }
       })
@@ -51,9 +49,9 @@ export class Contract {
               ...this.host.bindings
             },
             computeLimit: Infinity,
-            onBurn() {
-              if (host.consumeGas) {
-                host.consumeGas(1)
+            onBurn: () => {
+              if (this.host.consumeGas) {
+                this.host.consumeGas(1)
               }
             },
             module: { exports: this.state }
