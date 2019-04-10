@@ -69,7 +69,7 @@ export class Host {
     return result
   }
 
-  addContract(code: string, state: any = {}): string {
+  addContract(code: string, state: any = null): string {
     let contract = new Contract(code, state, this)
 
     this.contracts[contract.address] = contract
