@@ -22,19 +22,19 @@ module.exports = function coinsHandler(opts = {}) {
         host = new Host({})
       }
       Object.keys(state.contracts).forEach(address => {
-        host.setBindings(
-          makeBindings(
-            state,
-            context,
-            { to: address, senderAddress: address },
-            host
-          )
-        )
-        host.consumeGas = function(gas) {
-          context.burn(address, gas)
-        }
-        host.load(state.contracts)
         try {
+          host.setBindings(
+            makeBindings(
+              state,
+              context,
+              { to: address, senderAddress: address },
+              host
+            )
+          )
+          host.consumeGas = function(gas) {
+            context.burn(address, gas)
+          }
+          host.load(state.contracts)
           if (typeof host.contracts[address].exports.onBlock !== 'function') {
             return
           }
