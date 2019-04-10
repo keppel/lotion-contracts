@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "tsc && tape test/*.js",
     "prepare": "tsc"
   },
   "keywords": [],
@@ -19,6 +19,7 @@
     "ses": "^0.4.0"
   },
   "devDependencies": {
-    "deterministic-json": "^1.0.5"
+    "deterministic-json": "^1.0.5",
+    "tape": "^4.10.1"
   }
 }
