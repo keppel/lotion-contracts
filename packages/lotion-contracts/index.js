@@ -55,7 +55,7 @@ module.exports = function coinsHandler(opts = {}) {
         host.load(state.contracts)
       }
       if (output.action === 'create') {
-        let contractAddress = host.addContract(output.code, {})
+        let contractAddress = host.addContract(output.code, null)
         context.mint({ address: contractAddress, amount: output.amount })
         state.contracts = host.save()
       } else if (output.action === 'message') {
