@@ -65,6 +65,7 @@ export class Host {
     if (typeof getPath(contract.exports, message.method) !== 'function') {
       throw new Error('Contract has no method called ' + message.method)
     }
+    this.currentCallerAddress = message.sender
     let method = getPath(contract.exports, message.method)
     let result = method.call(contract.exports, ...message.data)
     return result

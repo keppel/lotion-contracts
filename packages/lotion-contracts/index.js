@@ -40,6 +40,7 @@ module.exports = function coinsHandler(opts = {}) {
           if (context.getAccount(address).balance < 10) {
             return
           }
+          host.currentCallerAddress = address
           host.contracts[address].exports.onBlock()
           state.contracts = host.save()
         } catch (e) {
