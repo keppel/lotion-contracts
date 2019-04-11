@@ -37,6 +37,7 @@ interface SavedView {
 export class Host {
   public contracts: ContractMap = {}
   public consumeGas: GasMeter | null = null
+  public currentCallerAddress: string | null = null
 
   public bindings: object = {}
   public restrictedMethods: string[] = []

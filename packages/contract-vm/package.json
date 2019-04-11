@@ -1,6 +1,6 @@
 {
   "name": "contract-vm",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "bs58": "^4.0.1",
     "lodash.get": "^4.4.2",
     "metering": "0.0.0",
-    "modbox": "^0.1.2",
+    "modbox": "^0.1.4",
     "ses": "^0.4.0"
   },
   "devDependencies": {
