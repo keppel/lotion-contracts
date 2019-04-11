@@ -1,6 +1,5 @@
 let { Host } = require('contract-vm')
 let coins = require('coins')
-let { parse, stringify } = require('deterministic-json')
 let makeBindings = require('./lib/bindings.js')
 
 module.exports = function coinsHandler(opts = {}) {

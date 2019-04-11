@@ -36,10 +36,29 @@ module.exports = function(state, context, info, host) {
           }
         }
       },
+      getCallerAddress() {
+        return host.currentCallerAddress
+      },
       wrap(targetAddress) {
         let target = host.contracts[targetAddress]
         if (target) {
-          return target.exports
+          return new Proxy(target.exports, {
+            get(target, key) {
+              if (typeof target[key] === 'function') {
+                return function(...args) {
+                  let previousCallerAddress = host.currentCallerAddress
+                  host.currentCallerAddress = address
+                  try {
+                    return target[key](...args)
+                  } finally {
+                    host.currentCallerAddress = previousCallerAddress
+                  }
+                }
+              } else {
+                return target[key]
+              }
+            }
+          })
         } else {
           throw new Error(
             'Target contract does not exist at address ' + targetAddress
