@@ -15,7 +15,7 @@
   "dependencies": {
     "bs58": "^4.0.1",
     "coins": "^4.5.0",
-    "contract-vm": "0.0.4",
+    "contract-vm": "*",
     "lodash.get": "^4.4.2",
     "lotion-connect": "^0.1.14",
     "proxmise": "^1.1.0"
