@@ -1,6 +1,6 @@
 {
   "name": "lotion-contracts",
-  "version": "0.0.5",
+  "version": "0.0.7",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -19,7 +19,7 @@
     "tape": "^4.10.1"
   },
   "dependencies": {
-    "contract-vm": "0.0.4",
+    "contract-vm": "*",
     "ses": "^0.4.0"
   }
 }
