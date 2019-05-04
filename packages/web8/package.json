@@ -1,6 +1,6 @@
 {
   "name": "web8",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -17,7 +17,7 @@
     "coins": "^4.5.0",
     "contract-vm": "*",
     "lodash.get": "^4.4.2",
-    "lotion-connect": "^0.1.14",
+    "lotion-connect": "^0.1.16",
     "proxmise": "^1.1.0"
   }
 }
