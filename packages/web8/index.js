@@ -7,7 +7,7 @@ let { Host } = require('contract-vm')
 let getPath = require('lodash.get')
 
 const NOMIC_GCI =
-  '4288a3cfd6928dd67564b1448db47efc9e87bfe7bc7b96f05353e47e9d422ca5'
+  '03c13f8701091afcb9338b7b0a4c4da5d6050da9c556c40942a68ffb437172e2'
 class Web8 {
   constructor(gci) {
     this.gci = gci
@@ -63,7 +63,7 @@ class Web8 {
         NOMIC_GCI,
         {
           nodes: ['ws://134.209.50.224:1338'],
-          genesis: require('./lib/genesis/nomic-v0.0.2.json')
+          genesis: require('./lib/genesis/nomic-v0.0.3.json')
         }
       )
     }
