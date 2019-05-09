@@ -8,6 +8,7 @@ export class Contract {
 
   public state: any
   public address: string
+  public methodNames: string[] = []
 
   constructor(
     public code: string,
@@ -39,6 +40,27 @@ export class Contract {
 
       this.state = JSON.parse(JSON.stringify(box))
     }
+
+    /**
+     * Compute contract public API.
+     * Does not charge gas.
+     */
+
+    let box = modbox(this.code, {
+      globals: {
+        ...this.host.bindings
+      },
+      computeLimit: 1e6,
+      onBurn: () => {
+        if (this.host.consumeGas) {
+          this.host.consumeGas(1)
+        }
+      }
+    })
+
+    this.methodNames = Object.keys(box)
+      .filter(key => typeof box[key] === 'function')
+      .sort()
 
     this.exports = new Proxy(
       {},
