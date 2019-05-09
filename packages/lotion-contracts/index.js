@@ -3,23 +3,15 @@ let coins = require('coins')
 let makeBindings = require('./lib/bindings.js')
 
 module.exports = function coinsHandler(opts = {}) {
-  // Initialize contract VM
-  let host
-
   return {
     initialState: {
       gasPrice: 1,
-      contracts: {}
+      contracts: {},
+      contractAPI: {}
     },
-    initialize() {
-      if (!host) {
-        host = new Host({})
-      }
-    },
+    initialize() {},
     onBlock(state, context) {
-      if (!host) {
-        host = new Host({})
-      }
+      let host = new Host({})
       Object.keys(state.contracts).forEach(address => {
         try {
           host.setBindings(
@@ -34,12 +26,13 @@ module.exports = function coinsHandler(opts = {}) {
             context.burn(address, gas)
           }
           host.load(state.contracts)
-          if (typeof host.contracts[address].exports.onBlock !== 'function') {
-            return
-          }
           if (context.getAccount(address).balance < 10) {
             return
           }
+          if (!host.contracts[address].methodNames.includes('onBlock')) {
+            return
+          }
+
           host.currentCallerAddress = address
           host.contracts[address].exports.onBlock()
           state.contracts = host.save()
@@ -50,23 +43,27 @@ module.exports = function coinsHandler(opts = {}) {
       })
     },
     onOutput(output, state, context) {
-      if (!host) {
-        host = new Host()
-        host.load(state.contracts)
+      let host = new Host({})
+
+      /**
+       * Load saved host state from lotion store
+       */
+      let senderPubKey = context.transaction.from[0].pubkey
+      let senderAddress = coins.addressHash(senderPubKey)
+      host.consumeGas = function(gas) {
+        context.burn(senderAddress, gas)
       }
+      host.setBindings(makeBindings(state, context, output, host))
+      host.load(state.contracts)
+
       if (output.action === 'create') {
         let contractAddress = host.addContract(output.code, null)
-        context.mint({ address: contractAddress, amount: output.amount })
+        context.mint({
+          address: contractAddress,
+          amount: output.amount
+        })
         state.contracts = host.save()
       } else if (output.action === 'message') {
-        let senderPubKey = context.transaction.from[0].pubkey
-        let senderAddress = coins.addressHash(senderPubKey)
-
-        /**
-         * Load saved host state from lotion store
-         */
-        host.setBindings(makeBindings(state, context, output, host))
-        host.load(state.contracts)
         try {
           host.execute(
             {
